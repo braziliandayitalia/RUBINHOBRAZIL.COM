@@ -10,9 +10,14 @@ interface Props {
 
 const { date, time, title, location, link, soldOut } = Astro.props;
 
+// Safe date parsing
 const dateObj = new Date(date);
-const day = dateObj.getDate();
-const month = dateObj.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+const isValidDate = !isNaN(dateObj.getTime());
+
+const day = isValidDate ? dateObj.getDate() : '';
+const month = isValidDate
+  ? dateObj.toLocaleString('en-US', { month: 'short' }).toUpperCase()
+  : '';
 ---
 
 <div class={`event-card glass-card page-fade-in ${soldOut ? 'sold-out' : 'neon-border-cyan'}`}>
@@ -20,16 +25,20 @@ const month = dateObj.toLocaleString('en-US', { month: 'short' }).toUpperCase();
     <span class="day">{day}</span>
     <span class="month">{month}</span>
   </div>
+
   <div class="event-info">
     <h3>{title}</h3>
     <p class="location grad-cyan-pink">{location}</p>
     <p class="time">{time}</p>
   </div>
+
   <div class="event-action">
     {soldOut ? (
       <span class="badge-sold-out">SOLD OUT</span>
     ) : (
-      <a href={link} class="btn btn-secondary glow-hover">Tickets</a>
+      <a href={link} class="btn btn-secondary glow-hover" target="_blank" rel="noopener noreferrer">
+        Tickets
+      </a>
     )}
   </div>
 </div>
@@ -43,6 +52,7 @@ const month = dateObj.toLocaleString('en-US', { month: 'short' }).toUpperCase();
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     background: rgba(255, 255, 255, 0.03);
     padding: 2rem;
+    border-radius: 12px;
   }
 
   .event-card:hover {
@@ -64,8 +74,15 @@ const month = dateObj.toLocaleString('en-US', { month: 'short' }).toUpperCase();
     font-weight: 800;
   }
 
-  .day { font-size: 1.8rem; line-height: 1; }
-  .month { font-size: 0.8rem; }
+  .day {
+    font-size: 1.8rem;
+    line-height: 1;
+  }
+
+  .month {
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+  }
 
   .event-info {
     flex-grow: 1;
@@ -94,6 +111,8 @@ const month = dateObj.toLocaleString('en-US', { month: 'short' }).toUpperCase();
     border-radius: 4px;
     font-weight: 600;
     font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
   }
 
   @media (max-width: 600px) {
@@ -102,12 +121,14 @@ const month = dateObj.toLocaleString('en-US', { month: 'short' }).toUpperCase();
       text-align: center;
       gap: 1rem;
     }
+
     .event-date {
       width: 100%;
       height: 60px;
       flex-direction: row;
       gap: 0.5rem;
     }
+
     .event-card:hover {
       transform: translateY(-5px);
     }
