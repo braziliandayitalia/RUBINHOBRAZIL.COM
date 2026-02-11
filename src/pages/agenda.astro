@@ -1,0 +1,84 @@
+---
+import Layout from '../layouts/Layout.astro';
+import EventCard from '../components/EventCard.astro';
+import events from '../data/events.json';
+
+// Sort events by date
+const sortedEvents = events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+---
+
+<Layout title="Agenda">
+  <section class="agenda-page page-fade-in">
+    <div class="page-header">
+      <h1 class="neon-text-cyan grad-cyan-pink">Live <span class="neon-text-pink">Agenda</span></h1>
+      <p>Catch me live at these locations. More dates coming soon!</p>
+    </div>
+    
+    <div class="agenda-container">
+      <div class="events-grid">
+        {sortedEvents.map(event => (
+          <EventCard {...event} />
+        ))}
+      </div>
+      
+      <div class="booking-cta glass-card neon-border-pink">
+        <h2>Want to book DJ RUBINHO BRAZIL?</h2>
+        <p>Available for clubs, private events, and festivals worldwide.</p>
+        <a href="/contact" class="btn btn-primary glow-hover">Get in Touch</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .agenda-page {
+    min-height: 80vh;
+    padding: 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 5rem;
+  }
+
+  .page-header h1 {
+    font-size: 4rem;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    letter-spacing: -1px;
+  }
+
+  .page-header p {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+  }
+
+  .agenda-container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .booking-cta {
+    margin-top: 6rem;
+    padding: 4rem 2rem;
+    text-align: center;
+    background: rgba(255, 0, 127, 0.02);
+  }
+
+  .booking-cta h2 {
+    font-size: 2.2rem;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+  }
+
+  .booking-cta p {
+    color: var(--text-secondary);
+    margin-bottom: 2.5rem;
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 768px) {
+    .page-header h1 { font-size: 2.5rem; }
+    .agenda-page { padding: 1rem; }
+  }
+</style>

@@ -1,0 +1,233 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import EventCard from '../components/EventCard.astro';
+import events from '../data/events.json';
+import music from '../data/music.json';
+
+const upcomingEvents = events.slice(0, 3);
+const featuredMusic = music.slice(0, 2);
+---
+
+<Layout title="Home">
+	<Hero />
+	
+	<section id="upcoming" class="page-fade-in">
+		<div class="section-header">
+			<h2 class="neon-text-cyan grad-cyan-pink">Tour Dates</h2>
+			<a href="/agenda" class="view-all glow-hover">Full Agenda &rarr;</a>
+		</div>
+		<div class="events-list">
+			{upcomingEvents.map(event => (
+				<EventCard {...event} />
+			))}
+		</div>
+	</section>
+
+  <div class="section-divider"></div>
+
+	<section id="featured-music" class="page-fade-in">
+		<div class="section-header">
+			<h2 class="neon-text-pink">New Releases</h2>
+			<a href="/music" class="view-all glow-hover">Open Player &rarr;</a>
+		</div>
+		<div class="music-grid">
+			{featuredMusic.map(track => (
+				<div class="music-card glass-card neon-border-pink">
+					<div class="img-container">
+            <img src={track.cover} alt={track.title} />
+            <div class="play-hint">Listen</div>
+          </div>
+					<div class="music-info">
+						<h3>{track.title}</h3>
+						<p class="category-tag">{track.category}</p>
+					</div>
+				</div>
+			))}
+		</div>
+	</section>
+
+  <div class="section-divider"></div>
+
+  <section id="newsletter" class="glass-card newsletter-section page-fade-in neon-border-cyan">
+    <div class="newsletter-content">
+      <h2 class="neon-text-cyan">Join the Fan Center</h2>
+      <p>Get exclusive mashups, early access to new tracks, and VIP guestlist updates.</p>
+      <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Subscribed!')">
+        <input type="email" placeholder="Your Email Address" required />
+        <button type="submit" class="btn btn-primary glow-hover">Subscribe</button>
+      </form>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+    width: 60%;
+    margin: 4rem auto;
+  }
+
+	.section-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+		margin-bottom: 4rem;
+    border-left: 4px solid var(--accent-cyan);
+    padding-left: 1.5rem;
+	}
+
+  .section-header h2 {
+    font-size: 3rem;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .view-all {
+    color: var(--text-secondary);
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+	.music-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+		gap: 2.5rem;
+	}
+
+	.music-card {
+		padding: 0;
+		overflow: hidden;
+		transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.music-card:hover {
+		transform: translateY(-15px);
+	}
+
+  .img-container {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+  }
+
+	.img-container img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+    transition: 0.5s;
+	}
+
+  .music-card:hover img {
+    transform: scale(1.1);
+    filter: brightness(0.5);
+  }
+
+  .play-hint {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--accent-pink);
+    color: white;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 800;
+    opacity: 0;
+    transition: 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .music-card:hover .play-hint {
+    opacity: 1;
+  }
+
+	.music-info {
+		padding: 2rem;
+	}
+
+	.music-info h3 {
+		font-size: 1.4rem;
+		margin-bottom: 1rem;
+	}
+
+  .category-tag {
+    background: rgba(255, 0, 127, 0.1);
+    color: var(--accent-pink);
+    display: inline-block;
+    padding: 0.3rem 1rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .newsletter-section {
+    max-width: 900px;
+    margin: 8rem auto;
+    text-align: center;
+    padding: 5rem 3rem;
+    background: rgba(0, 243, 255, 0.02);
+  }
+
+  .newsletter-content h2 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+  }
+
+  .newsletter-content p {
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .newsletter-form {
+    display: flex;
+    gap: 1rem;
+    max-width: 550px;
+    margin: 0 auto;
+  }
+
+  .newsletter-form input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 50px;
+    padding: 1rem 2rem;
+    color: white;
+    font-family: inherit;
+    outline: none;
+    font-size: 1rem;
+  }
+
+  .newsletter-form input:focus {
+    border-color: var(--accent-cyan);
+    background: rgba(0, 243, 255, 0.05);
+  }
+
+	@media (max-width: 768px) {
+		.section-header {
+			flex-direction: column;
+			align-items: center;
+			gap: 1.5rem;
+			text-align: center;
+      padding-left: 0;
+      border-left: none;
+      border-bottom: 2px solid var(--accent-cyan);
+      padding-bottom: 1rem;
+		}
+    .newsletter-form {
+      flex-direction: column;
+    }
+    .newsletter-section {
+      padding: 3rem 1.5rem;
+    }
+	}
+</style>

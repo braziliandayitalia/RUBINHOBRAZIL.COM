@@ -1,0 +1,96 @@
+---
+interface Props {
+  title: string;
+  thumbnail: string;
+  videoUrl: string;
+  type: 'YouTube' | 'Local' | 'Reel';
+}
+
+const { title, thumbnail, videoUrl, type } = Astro.props;
+---
+
+<div class="video-card glass-card fade-in">
+  <div class="video-thumbnail">
+    <img src={thumbnail} alt={title} />
+    <a href={videoUrl} target="_blank" class="play-overlay">
+      <span class="play-icon">▶</span>
+    </a>
+    <span class={`type-badge ${type.toLowerCase()}`}>{type}</span>
+  </div>
+  <div class="video-info">
+    <h3>{title}</h3>
+  </div>
+</div>
+
+<style>
+  .video-card {
+    padding: 0;
+    overflow: hidden;
+    transition: 0.3s;
+  }
+
+  .video-card:hover {
+    transform: scale(1.02);
+    border-color: var(--accent-cyan);
+  }
+
+  .video-thumbnail {
+    position: relative;
+    aspect-ratio: 16/9;
+  }
+
+  .video-card.reel .video-thumbnail {
+    aspect-ratio: 9/16;
+  }
+
+  .video-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .play-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: 0.3s;
+  }
+
+  .video-card:hover .play-overlay {
+    opacity: 1;
+  }
+
+  .play-icon {
+    font-size: 3rem;
+    color: var(--accent-cyan);
+    text-shadow: 0 0 20px var(--accent-cyan);
+  }
+
+  .type-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--accent-pink);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .video-info {
+    padding: 1.2rem;
+  }
+
+  .video-info h3 {
+    font-size: 1rem;
+  }
+</style>

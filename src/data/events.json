@@ -1,0 +1,29 @@
+[
+    {
+        "id": "1",
+        "date": "2024-03-15",
+        "time": "23:30",
+        "title": "Neon Nights",
+        "location": "Club Zero, Milano",
+        "link": "#",
+        "soldOut": false
+    },
+    {
+        "id": "2",
+        "date": "2024-03-22",
+        "time": "22:00",
+        "title": "Underground Sessions",
+        "location": "Warehouse 42, Roma",
+        "link": "#",
+        "soldOut": true
+    },
+    {
+        "id": "3",
+        "date": "2024-04-05",
+        "time": "00:00",
+        "title": "Spring Break Festival",
+        "location": "Rimini Beach",
+        "link": "#",
+        "soldOut": false
+    }
+]

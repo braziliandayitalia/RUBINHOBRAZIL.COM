@@ -1,0 +1,117 @@
+---
+import Layout from '../layouts/Layout.astro';
+import VideoCard from '../components/VideoCard.astro';
+
+const videos = [
+  {
+    title: "Live Set - São Paulo 2023",
+    platform: "YouTube",
+    url: "https://youtube.com/watch?v=example1",
+    thumbnail: "https://placehold.co/600x400/111/00f3ff?text=Live+Set+SP"
+  },
+  {
+    title: "Summer Mix 2024 (Teaser)",
+    platform: "Instagram",
+    url: "https://instagram.com/reels/example2",
+    thumbnail: "https://placehold.co/400x600/111/ff007f?text=Summer+Mix"
+  },
+  {
+    title: "Behind the Scenes - Studio",
+    platform: "TikTok",
+    url: "https://tiktok.com/@example3",
+    thumbnail: "https://placehold.co/400x600/111/00f3ff?text=Studio+Vibe"
+  }
+];
+---
+
+<Layout title="Clips">
+  <section class="clips-page page-fade-in">
+    <div class="page-header">
+      <h1 class="neon-text-cyan grad-cyan-pink">Video <span class="neon-text-pink">Clips</span></h1>
+      <p>Live sets, studio sessions, and social media highlights.</p>
+    </div>
+
+    <div class="clips-grid">
+      {videos.map(video => (
+        <VideoCard {...video} />
+      ))}
+    </div>
+
+    <div class="social-cta glass-card neon-border-cyan">
+      <h3>Follow for Daily Content</h3>
+      <div class="social-links-grid">
+        <a href="#" class="social-item glow-hover">Instagram</a>
+        <a href="#" class="social-item glow-hover">YouTube</a>
+        <a href="#" class="social-item glow-hover">TikTok</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .clips-page {
+    min-height: 80vh;
+    padding: 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 5rem;
+  }
+
+  .page-header h1 {
+    font-size: 4rem;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    letter-spacing: -1px;
+  }
+
+  .clips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .social-cta {
+    max-width: 800px;
+    margin: 8rem auto;
+    text-align: center;
+    padding: 4rem;
+    background: rgba(0, 243, 255, 0.02);
+  }
+
+  .social-cta h3 {
+    font-size: 2rem;
+    margin-bottom: 2.5rem;
+    text-transform: uppercase;
+  }
+
+  .social-links-grid {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  .social-item {
+    padding: 1rem 2rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 50px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: 0.3s;
+  }
+
+  .social-item:hover {
+    border-color: var(--accent-cyan);
+    background: rgba(0, 243, 255, 0.1);
+  }
+
+  @media (max-width: 768px) {
+    .page-header h1 { font-size: 2.5rem; }
+    .social-links-grid { flex-direction: column; }
+    .clips-page { padding: 1rem; }
+  }
+</style>

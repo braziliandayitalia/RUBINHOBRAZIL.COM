@@ -1,0 +1,142 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const products = [
+  {
+    title: "Official DJ T-Shirt",
+    price: "24.99 €",
+    image: "https://placehold.co/600x600/111/00f3ff?text=DJ+T-Shirt",
+    link: "#"
+  },
+  {
+    title: "Mashup Pack Vol. 1",
+    price: "9.99 €",
+    image: "https://placehold.co/600x600/111/ff007f?text=Mashup+Pack",
+    link: "#"
+  },
+  {
+    title: "Signed Poster (Limited)",
+    price: "15.00 €",
+    image: "https://placehold.co/600x600/111/00f3ff?text=Signed+Poster",
+    link: "#"
+  }
+];
+---
+
+<Layout title="Store">
+  <section class="store-page">
+    <div class="page-header">
+      <h1 class="neon-text-cyan">Official <span class="neon-text-pink">Store</span></h1>
+      <p>Merch, Digital Downloads, and Exclusive Content.</p>
+    </div>
+    
+    <div class="store-grid">
+      {products.map(product => (
+        <div class="product-card glass-card fade-in">
+          <div class="product-image">
+            <img src={product.image} alt={product.title} />
+          </div>
+          <div class="product-info">
+            <h3>{product.title}</h3>
+            <p class="price">{product.price}</p>
+            <a href={product.link} class="btn btn-secondary">Buy Now</a>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="external-links glass-card fade-in">
+      <h3>Streaming & Platforms</h3>
+      <div class="platform-grid">
+        <a href="#" class="platform-link">Beatport</a>
+        <a href="#" class="platform-link">Traxsource</a>
+        <a href="#" class="platform-link">Bandcamp</a>
+        <a href="#" class="platform-link">Apple Music</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .store-page {
+    min-height: 80vh;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .page-header h1 {
+    font-size: 3.5rem;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .store-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 6rem;
+  }
+
+  .product-card {
+    padding: 0;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .product-image img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+
+  .product-info {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .product-info h3 {
+    font-size: 1.25rem;
+  }
+
+  .price {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--accent-cyan);
+  }
+
+  .external-links {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 3rem;
+  }
+
+  .platform-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .platform-link {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 8px;
+    font-weight: 700;
+    border: 1px solid var(--glass-border);
+  }
+
+  .platform-link:hover {
+    border-color: var(--accent-pink);
+    color: var(--accent-pink);
+  }
+
+  @media (max-width: 768px) {
+    .page-header h1 { font-size: 2.5rem; }
+  }
+</style>

@@ -1,0 +1,92 @@
+---
+---
+<section class="hero page-fade-in">
+  <div class="grain-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-labels">
+      <span class="label neon-text-pink">ELECTRONIC MUSIC</span>
+      <span class="label neon-text-cyan grad-cyan-pink">LIVE SHOWS</span>
+    </div>
+    <h1 class="hero-title">
+      DJ <span class="neon-text-cyan">RUBINHO</span><br/>
+      <span class="neon-text-pink">BRAZIL</span>
+    </h1>
+    <p class="hero-subtitle">
+      Dalle favelas di São Vicente al mondo. Modern Beats, Tropical Energy, and Unforgettable Nights.
+    </p>
+    <div class="hero-btns">
+      <a href="/music" class="btn btn-primary glow-hover">Listen Now</a>
+      <a href="/agenda" class="btn btn-secondary">Tour Dates</a>
+    </div>
+  </div>
+  
+  <div class="hero-visual">
+    <div class="circle circle-1"></div>
+    <div class="circle circle-2"></div>
+    <div class="circle circle-3"></div>
+    <div class="light-beam"></div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    min-height: calc(100vh - var(--nav-height));
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(circle at 70% 50%, rgba(0, 243, 255, 0.05), transparent 50%);
+  }
+
+  .grain-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .hero-content {
+    flex: 1;
+    z-index: 10;
+    padding-left: 2rem;
+  }
+
+  /* ... rest of the existing styles ... */
+
+  .hero-title {
+    font-size: 6rem;
+    line-height: 0.9;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: -2px;
+  }
+
+  .hero-subtitle {
+    font-size: 1.4rem;
+    color: var(--text-secondary);
+    max-width: 550px;
+    margin-bottom: 3rem;
+    font-weight: 400;
+  }
+
+  .light-beam {
+    position: absolute;
+    top: -50%;
+    left: 50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 180deg at 50% 50%, transparent, rgba(0, 243, 255, 0.05), transparent);
+    animation: rotateBeam 20s linear infinite;
+    z-index: 0;
+  }
+
+  @keyframes rotateBeam {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  /* ... existing responsive styles ... */
+</style>

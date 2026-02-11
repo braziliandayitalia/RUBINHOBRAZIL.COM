@@ -1,0 +1,75 @@
+---
+import Layout from '../layouts/Layout.astro';
+import MusicPlayer from '../components/MusicPlayer.astro';
+---
+
+<Layout title="Music">
+  <section class="music-page page-fade-in">
+    <div class="page-header">
+      <h1 class="neon-text-cyan grad-cyan-pink">Music <span class="neon-text-pink">Library</span></h1>
+      <p>Originals, Remixes, and Exclusive Mashups.</p>
+    </div>
+    
+    <MusicPlayer />
+    
+    <div class="music-disclaimer glass-card neon-border-cyan">
+      <h3>Need these tracks?</h3>
+      <p>Follow me on Spotify or SoundCloud for high-quality streaming, or visit the Store for digital downloads.</p>
+      <div class="disclaimer-btns">
+        <a href="#" class="btn btn-secondary glow-hover">Spotify</a>
+        <a href="#" class="btn btn-secondary glow-hover">SoundCloud</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .music-page {
+    min-height: 80vh;
+    padding: 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .page-header h1 {
+    font-size: 4rem;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    letter-spacing: -1px;
+  }
+
+  .page-header p {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+  }
+
+  .music-disclaimer {
+    max-width: 1100px;
+    margin: 4rem auto;
+    text-align: center;
+    padding: 4rem;
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .music-disclaimer h3 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+
+  .disclaimer-btns {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  @media (max-width: 768px) {
+    .page-header h1 { font-size: 2.5rem; }
+    .disclaimer-btns { flex-direction: column; }
+    .music-page { padding: 1rem; }
+  }
+</style>
