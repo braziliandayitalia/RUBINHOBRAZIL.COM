@@ -10,7 +10,6 @@ interface Props {
 
 const { date, time, title, location, link, soldOut } = Astro.props;
 
-// Format date to be more readable (e.g., 15 MAR)
 const dateObj = new Date(date);
 const day = dateObj.getDate();
 const month = dateObj.toLocaleString('en-US', { month: 'short' }).toUpperCase();
@@ -51,8 +50,6 @@ const month = dateObj.toLocaleString('en-US', { month: 'short' }).toUpperCase();
     transform: translateX(15px);
     box-shadow: 0 0 30px rgba(0, 243, 255, 0.1);
   }
-  /* ... existing styles ... */
-</style>
 
   .event-date {
     display: flex;
