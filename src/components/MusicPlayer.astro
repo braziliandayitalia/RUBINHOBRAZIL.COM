@@ -7,10 +7,7 @@ import music from '../data/music.json';
     <div class="now-playing">
       <div class="cover-wrapper">
         <img id="current-cover" src={music[0].cover} alt="Cover" />
-        <div class="waveform-overlay" id="waveform">
-          <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-          <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-        </div>
+        <canvas id="visualizer" class="visualizer-canvas"></canvas>
       </div>
       <div class="track-info">
         <h2 id="current-title">{music[0].title}</h2>
@@ -23,7 +20,7 @@ import music from '../data/music.json';
     </div>
 
     <div class="player-controls">
-      <audio id="main-audio" src={music[0].url}></audio>
+      <audio id="main-audio" src={music[0].url} crossOrigin="anonymous"></audio>
       
       <div class="progress-bar-container">
         <div id="progress-bar" class="progress-bar"></div>
@@ -58,8 +55,14 @@ import music from '../data/music.json';
 </div>
 
 <script>
-  // Script logic
   const musicData = [
+    {
+      "title": "Feel Tha Beat",
+      "artist": "DJ RUBINHO BRAZIL",
+      "url": "/music/feel-tha-beat.mp3",
+      "category": "Theme",
+      "cover": "https://placehold.co/400x400/111/00f3ff?text=Feel+Tha+Beat"
+    },
     {
       "title": "Summer Vibe 2024",
       "artist": "DJ RUBINHO BRAZIL",
@@ -73,22 +76,59 @@ import music from '../data/music.json';
       "url": "/music/techno-night-remix.mp3",
       "category": "Versions",
       "cover": "https://placehold.co/400x400/111/ff007f?text=Techno+Night"
-    },
-    {
-      "title": "Latino Fire Mashup",
-      "artist": "DJ RUBINHO BRAZIL",
-      "url": "/music/latino-fire.mp3",
-      "category": "Mashup",
-      "cover": "https://placehold.co/400x400/111/00f3ff?text=Latino+Fire"
     }
   ];
 
   let currentIndex = 0;
+  let audioCtx;
+  let analyser;
+  let source;
+  
   const audio = document.getElementById('main-audio');
+  const canvas = document.getElementById('visualizer');
+  const canvasCtx = canvas.getContext('2d');
   const playBtn = document.getElementById('play-btn');
-  const waveform = document.getElementById('waveform');
   const progressBar = document.getElementById('progress-bar');
   const playlistItems = document.querySelectorAll('.playlist-item');
+
+  function initAudioContext() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioCtx.createAnalyser();
+      source = audioCtx.createMediaElementSource(audio);
+      source.connect(analyser);
+      analyser.connect(audioCtx.destination);
+      analyser.fftSize = 256;
+      
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      
+      draw();
+    }
+  }
+
+  function draw() {
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    analyser.getByteFrequencyData(dataArray);
+
+    const width = canvas.width;
+    const height = canvas.height;
+    canvasCtx.clearRect(0, 0, width, height);
+
+    const barWidth = (width / bufferLength) * 2;
+    let barHeight;
+    let x = 0;
+
+    for (let i = 0; i < bufferLength; i++) {
+      barHeight = (dataArray[i] / 255) * height * 0.8;
+      const hue = 120 - (i / bufferLength) * 120; // Green to Red
+      canvasCtx.fillStyle = `hsla(${hue}, 100%, 50%, 0.9)`;
+      canvasCtx.fillRect(x, (height / 2) - (barHeight / 2), barWidth, barHeight);
+      x += barWidth + 1;
+    }
+    requestAnimationFrame(draw);
+  }
 
   function loadTrack(index) {
     const track = musicData[index];
@@ -97,20 +137,19 @@ import music from '../data/music.json';
     document.getElementById('current-cover').src = track.cover;
     document.getElementById('current-category').textContent = track.category;
     audio.src = track.url;
-    
     playlistItems.forEach(item => item.classList.remove('active'));
     playlistItems[index].classList.add('active');
   }
 
   playBtn.addEventListener('click', () => {
+    initAudioContext();
     if (audio.paused) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
       audio.play();
       playBtn.textContent = 'Pause';
-      waveform.classList.add('active');
     } else {
       audio.pause();
       playBtn.textContent = 'Play';
-      waveform.classList.remove('active');
     }
   });
 
@@ -124,7 +163,7 @@ import music from '../data/music.json';
     loadTrack(currentIndex);
     audio.play();
     playBtn.textContent = 'Pause';
-    waveform.classList.add('active');
+    initAudioContext();
   });
 
   document.getElementById('prev-btn').addEventListener('click', () => {
@@ -132,7 +171,7 @@ import music from '../data/music.json';
     loadTrack(currentIndex);
     audio.play();
     playBtn.textContent = 'Pause';
-    waveform.classList.add('active');
+    initAudioContext();
   });
 
   playlistItems.forEach(item => {
@@ -141,192 +180,33 @@ import music from '../data/music.json';
       loadTrack(currentIndex);
       audio.play();
       playBtn.textContent = 'Pause';
-      waveform.classList.add('active');
+      initAudioContext();
     });
   });
 </script>
 
 <style>
-  .music-player-container {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 0;
-    background: rgba(10, 10, 10, 0.6);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    overflow: hidden;
-    max-width: 1100px;
-    margin: 2rem auto;
-  }
-
-  .player-main {
-    padding: 3rem;
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
-  }
-
-  .now-playing {
-    display: flex;
-    gap: 3rem;
-    align-items: center;
-  }
-
-  .cover-wrapper {
-    position: relative;
-    width: 250px;
-    height: 250px;
-  }
-
-  .cover-wrapper img {
-    width: 100%;
-    height: 100%;
-    border-radius: 15px;
-    object-fit: cover;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  }
-
-  .waveform-overlay {
-    position: absolute;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: flex-end;
-    gap: 3px;
-    height: 40px;
-    opacity: 0;
-    transition: 0.5s;
-    background: rgba(0,0,0,0.5);
-    padding: 8px 15px;
-    border-radius: 20px;
-    backdrop-filter: blur(5px);
-  }
-
-  .waveform-overlay.active {
-    opacity: 1;
-  }
-
-  .bar {
-    width: 3px;
-    height: 5px;
-    background: var(--accent-cyan);
-    border-radius: 1px;
-  }
-
-  .active .bar {
-    animation: wave 1s infinite ease-in-out;
-  }
-
-  @keyframes wave {
-    0%, 100% { height: 5px; }
-    50% { height: 25px; }
-  }
-
-  .track-info h2 {
-    font-size: 3rem;
-    margin-bottom: 0.5rem;
-    letter-spacing: -1px;
-  }
-
-  .track-meta {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    margin-top: 1.5rem;
-  }
-
-  .badge {
-    padding: 0.2rem 0.6rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 800;
-  }
-
-  .progress-bar-container {
-    width: 100%;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
-    cursor: pointer;
-  }
-
-  .progress-bar {
-    height: 100%;
-    background: var(--accent-cyan);
-    box-shadow: 0 0 15px var(--accent-cyan);
-    width: 0%;
-  }
-
-  .control-btns {
-    display: flex;
-    justify-content: center;
-    gap: 2.5rem;
-    align-items: center;
-  }
-
-  .play-btn {
-    width: 70px;
-    height: 70px;
-    background: white;
-    color: black;
-    border-radius: 50%;
-    font-weight: 800;
-  }
-
-  .playlist-sidebar {
-    background: rgba(0, 0, 0, 0.4);
-    border-left: 1px solid var(--glass-border);
-    padding: 2rem;
-  }
-
-  .playlist-header h3 {
-    font-size: 1.1rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 2rem;
-  }
-
-  .playlist-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.8rem;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-bottom: 0.5rem;
-    transition: 0.3s;
-  }
-
-  .playlist-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .playlist-item.active {
-    background: rgba(0, 243, 255, 0.15);
-  }
-
-  .item-visual img {
-    width: 45px;
-    height: 45px;
-    border-radius: 6px;
-    object-fit: cover;
-  }
-
-  .item-title {
-    display: block;
-    font-weight: 600;
-    font-size: 0.9rem;
-  }
-
-  .item-artist {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-  }
-
+  .music-player-container { display: grid; grid-template-columns: 1fr 300px; background: rgba(10, 10, 10, 0.6); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; max-width: 1100px; margin: 2rem auto; }
+  .player-main { padding: 3rem; display: flex; flex-direction: column; gap: 3rem; }
+  .now-playing { display: flex; gap: 3rem; align-items: center; }
+  .cover-wrapper { position: relative; width: 250px; height: 250px; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); }
+  .cover-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+  .visualizer-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; opacity: 0.8; }
+  .track-info h2 { font-size: 3rem; margin-bottom: 0.5rem; letter-spacing: -1px; }
+  .progress-bar-container { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; cursor: pointer; }
+  .progress-bar { height: 100%; background: var(--accent-cyan); box-shadow: 0 0 15px var(--accent-cyan); width: 0%; }
+  .control-btns { display: flex; justify-content: center; gap: 2.5rem; align-items: center; }
+  .play-btn { width: 70px; height: 70px; background: white; color: black; border-radius: 50%; font-weight: 800; }
+  .playlist-sidebar { background: rgba(0, 0, 0, 0.4); border-left: 1px solid var(--glass-border); padding: 2rem; }
+  .playlist-item { display: flex; align-items: center; gap: 1rem; padding: 0.8rem; border-radius: 10px; cursor: pointer; margin-bottom: 0.5rem; transition: 0.3s; }
+  .playlist-item.active { background: rgba(0, 243, 255, 0.15); }
+  
   @media (max-width: 900px) {
     .music-player-container { grid-template-columns: 1fr; }
     .now-playing { flex-direction: column; text-align: center; }
+    .player-main { padding: 1.5rem; gap: 1.5rem; }
+    .track-info h2 { font-size: 2rem; }
+    .cover-wrapper { width: 180px; height: 180px; }
+    .playlist-sidebar { border-left: none; border-top: 1px solid var(--glass-border); }
   }
 </style>
