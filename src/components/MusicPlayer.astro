@@ -1,148 +1,117 @@
----
-import music from '../data/music.json';
----
-
-<div class="music-player-container glass-card page-fade-in">
-  <div class="player-main">
-    <div class="now-playing">
-      <div class="cover-wrapper">
-        <img id="current-cover" src={music[0].cover} alt="Cover" />
-        <canvas id="visualizer" class="visualizer-canvas"></canvas>
-      </div>
-      <div class="track-info">
-        <h2 id="current-title">{music[0].title}</h2>
-        <p id="current-artist">{music[0].artist}</p>
-        <div class="track-meta">
-          <span id="current-category" class="category">{music[0].category}</span>
-          <span class="badge neon-border-cyan">HD AUDIO</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="player-controls">
-      <audio id="main-audio" src={music[0].url} crossOrigin="anonymous"></audio>
-      
-      <div class="progress-bar-container">
-        <div id="progress-bar" class="progress-bar"></div>
-      </div>
-      
-      <div class="control-btns">
-        <button id="prev-btn" class="ctrl-btn">&larr;</button>
-        <button id="play-btn" class="ctrl-btn play-btn glow-hover">Play</button>
-        <button id="next-btn" class="ctrl-btn">&rarr;</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="playlist-sidebar">
-    <div class="playlist-header">
-      <h3 class="grad-cyan-pink">Next Tracks</h3>
-    </div>
-    <ul class="playlist">
-      {music.map((track, index) => (
-        <li class={`playlist-item ${index === 0 ? 'active' : ''}`} data-index={index}>
-          <div class="item-visual">
-            <img src={track.cover} alt="" />
-          </div>
-          <div class="item-info">
-            <span class="item-title">{track.title}</span>
-            <span class="item-artist">{track.artist}</span>
-          </div>
-        </li>
-      ))}
-    </ul>
-  </div>
-</div>
-
 <script>
   const musicData = [
     {
-      "title": "Feel Tha Beat",
-      "artist": "DJ RUBINHO BRAZIL",
-      "url": "/music/feel-tha-beat.mp3",
-      "category": "Theme",
-      "cover": "https://placehold.co/400x400/111/00f3ff?text=Feel+Tha+Beat"
+      title: "Feel Tha Beat",
+      artist: "DJ RUBINHO BRAZIL",
+      url: "/music/feel-tha-beat.mp3",
+      category: "Theme",
+      cover: "https://placehold.co/400x400/111/00f3ff?text=Feel+Tha+Beat"
     },
     {
-      "title": "Summer Vibe 2024",
-      "artist": "DJ RUBINHO BRAZIL",
-      "url": "/music/summer-vibe-2024.mp3",
-      "category": "Originals",
-      "cover": "https://placehold.co/400x400/111/00f3ff?text=Summer+Vibe"
+      title: "Summer Vibe 2024",
+      artist: "DJ RUBINHO BRAZIL",
+      url: "/music/summer-vibe-2024.mp3",
+      category: "Originals",
+      cover: "https://placehold.co/400x400/111/00f3ff?text=Summer+Vibe"
     },
     {
-      "title": "Techno Night (Remix)",
-      "artist": "DJ RUBINHO BRAZIL",
-      "url": "/music/techno-night-remix.mp3",
-      "category": "Versions",
-      "cover": "https://placehold.co/400x400/111/ff007f?text=Techno+Night"
+      title: "Techno Night (Remix)",
+      artist: "DJ RUBINHO BRAZIL",
+      url: "/music/techno-night-remix.mp3",
+      category: "Versions",
+      cover: "https://placehold.co/400x400/111/ff007f?text=Techno+Night"
     }
   ];
 
   let currentIndex = 0;
-  let audioCtx;
-  let analyser;
-  let source;
-  
+  let audioCtx = null;
+  let analyser = null;
+  let source = null;
+
   const audio = document.getElementById('main-audio');
   const canvas = document.getElementById('visualizer');
-  const canvasCtx = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d');
   const playBtn = document.getElementById('play-btn');
   const progressBar = document.getElementById('progress-bar');
   const playlistItems = document.querySelectorAll('.playlist-item');
 
-  function initAudioContext() {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      analyser = audioCtx.createAnalyser();
-      source = audioCtx.createMediaElementSource(audio);
-      source.connect(analyser);
-      analyser.connect(audioCtx.destination);
-      analyser.fftSize = 256;
-      
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-      
-      draw();
-    }
+  function resizeCanvas() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+
+  function initAudio() {
+    if (audioCtx) return;
+
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 512;
+    analyser.smoothingTimeConstant = 0.88;
+
+    source = audioCtx.createMediaElementSource(audio);
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+
+    resizeCanvas();
+    draw();
   }
 
   function draw() {
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
-    analyser.getByteFrequencyData(dataArray);
-
-    const width = canvas.width;
-    const height = canvas.height;
-    canvasCtx.clearRect(0, 0, width, height);
-
-    const barWidth = (width / bufferLength) * 2;
-    let barHeight;
-    let x = 0;
-
-    for (let i = 0; i < bufferLength; i++) {
-      barHeight = (dataArray[i] / 255) * height * 0.8;
-      const hue = 120 - (i / bufferLength) * 120; // Green to Red
-      canvasCtx.fillStyle = `hsla(${hue}, 100%, 50%, 0.9)`;
-      canvasCtx.fillRect(x, (height / 2) - (barHeight / 2), barWidth, barHeight);
-      x += barWidth + 1;
-    }
     requestAnimationFrame(draw);
+
+    if (!analyser) return;
+
+    const bufferLength = analyser.frequencyBinCount;
+    const data = new Uint8Array(bufferLength);
+    analyser.getByteFrequencyData(data);
+
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const bars = 64;
+    const step = Math.floor(bufferLength / bars);
+    const barW = w / bars;
+
+    for (let i = 0; i < bars; i++) {
+      const bass = data[i * step] || 0;
+      const high = data[bufferLength - 1 - i * step] || 0;
+      const power = (bass * 0.75 + high * 0.25) / 255;
+
+      const barH = power * h;
+
+      const grad = ctx.createLinearGradient(0, h - barH, 0, h);
+      grad.addColorStop(0, 'rgba(0,243,255,0.95)');
+      grad.addColorStop(1, 'rgba(255,0,127,0.9)');
+
+      ctx.fillStyle = grad;
+      ctx.shadowBlur = 25;
+      ctx.shadowColor = 'rgba(0,243,255,0.6)';
+
+      ctx.fillRect(
+        i * barW + barW * 0.15,
+        h - barH,
+        barW * 0.7,
+        barH
+      );
+    }
   }
 
   function loadTrack(index) {
-    const track = musicData[index];
-    document.getElementById('current-title').textContent = track.title;
-    document.getElementById('current-artist').textContent = track.artist;
-    document.getElementById('current-cover').src = track.cover;
-    document.getElementById('current-category').textContent = track.category;
-    audio.src = track.url;
-    playlistItems.forEach(item => item.classList.remove('active'));
+    const t = musicData[index];
+    document.getElementById('current-title').textContent = t.title;
+    document.getElementById('current-artist').textContent = t.artist;
+    document.getElementById('current-cover').src = t.cover;
+    document.getElementById('current-category').textContent = t.category;
+    audio.src = t.url;
+
+    playlistItems.forEach(i => i.classList.remove('active'));
     playlistItems[index].classList.add('active');
   }
 
   playBtn.addEventListener('click', () => {
-    initAudioContext();
+    initAudio();
     if (audio.paused) {
       if (audioCtx.state === 'suspended') audioCtx.resume();
       audio.play();
@@ -154,59 +123,33 @@ import music from '../data/music.json';
   });
 
   audio.addEventListener('timeupdate', () => {
-    const percent = (audio.currentTime / audio.duration) * 100;
-    progressBar.style.width = percent + '%';
+    if (!audio.duration) return;
+    progressBar.style.width = (audio.currentTime / audio.duration) * 100 + '%';
   });
 
-  document.getElementById('next-btn').addEventListener('click', () => {
+  document.getElementById('next-btn').onclick = () => {
     currentIndex = (currentIndex + 1) % musicData.length;
     loadTrack(currentIndex);
     audio.play();
     playBtn.textContent = 'Pause';
-    initAudioContext();
-  });
+    initAudio();
+  };
 
-  document.getElementById('prev-btn').addEventListener('click', () => {
+  document.getElementById('prev-btn').onclick = () => {
     currentIndex = (currentIndex - 1 + musicData.length) % musicData.length;
     loadTrack(currentIndex);
     audio.play();
     playBtn.textContent = 'Pause';
-    initAudioContext();
-  });
+    initAudio();
+  };
 
   playlistItems.forEach(item => {
-    item.addEventListener('click', () => {
-      currentIndex = parseInt(item.getAttribute('data-index'));
+    item.onclick = () => {
+      currentIndex = parseInt(item.dataset.index);
       loadTrack(currentIndex);
       audio.play();
       playBtn.textContent = 'Pause';
-      initAudioContext();
-    });
+      initAudio();
+    };
   });
 </script>
-
-<style>
-  .music-player-container { display: grid; grid-template-columns: 1fr 300px; background: rgba(10, 10, 10, 0.6); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; max-width: 1100px; margin: 2rem auto; }
-  .player-main { padding: 3rem; display: flex; flex-direction: column; gap: 3rem; }
-  .now-playing { display: flex; gap: 3rem; align-items: center; }
-  .cover-wrapper { position: relative; width: 250px; height: 250px; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); }
-  .cover-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-  .visualizer-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; opacity: 0.8; }
-  .track-info h2 { font-size: 3rem; margin-bottom: 0.5rem; letter-spacing: -1px; }
-  .progress-bar-container { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; cursor: pointer; }
-  .progress-bar { height: 100%; background: var(--accent-cyan); box-shadow: 0 0 15px var(--accent-cyan); width: 0%; }
-  .control-btns { display: flex; justify-content: center; gap: 2.5rem; align-items: center; }
-  .play-btn { width: 70px; height: 70px; background: white; color: black; border-radius: 50%; font-weight: 800; }
-  .playlist-sidebar { background: rgba(0, 0, 0, 0.4); border-left: 1px solid var(--glass-border); padding: 2rem; }
-  .playlist-item { display: flex; align-items: center; gap: 1rem; padding: 0.8rem; border-radius: 10px; cursor: pointer; margin-bottom: 0.5rem; transition: 0.3s; }
-  .playlist-item.active { background: rgba(0, 243, 255, 0.15); }
-  
-  @media (max-width: 900px) {
-    .music-player-container { grid-template-columns: 1fr; }
-    .now-playing { flex-direction: column; text-align: center; }
-    .player-main { padding: 1.5rem; gap: 1.5rem; }
-    .track-info h2 { font-size: 2rem; }
-    .cover-wrapper { width: 180px; height: 180px; }
-    .playlist-sidebar { border-left: none; border-top: 1px solid var(--glass-border); }
-  }
-</style>
