@@ -56,27 +56,9 @@ import music from '../data/music.json';
 
 <script>
   const musicData = [
-    {
-      "title": "Feel Tha Beat",
-      "artist": "DJ RUBINHO BRAZIL",
-      "url": "/music/feel-tha-beat.mp3",
-      "category": "Theme",
-      "cover": "https://placehold.co/400x400/111/00f3ff?text=Feel+Tha+Beat"
-    },
-    {
-      "title": "Summer Vibe 2024",
-      "artist": "DJ RUBINHO BRAZIL",
-      "url": "/music/summer-vibe-2024.mp3",
-      "category": "Originals",
-      "cover": "https://placehold.co/400x400/111/00f3ff?text=Summer+Vibe"
-    },
-    {
-      "title": "Techno Night (Remix)",
-      "artist": "DJ RUBINHO BRAZIL",
-      "url": "/music/techno-night-remix.mp3",
-      "category": "Versions",
-      "cover": "https://placehold.co/400x400/111/ff007f?text=Techno+Night"
-    }
+    { "title": "Feel Tha Beat", "artist": "DJ RUBINHO BRAZIL", "url": "/music/feel-tha-beat.mp3", "category": "Theme", "cover": "https://placehold.co/400x400/111/00f3ff?text=Feel+Tha+Beat" },
+    { "title": "Summer Vibe 2024", "artist": "DJ RUBINHO BRAZIL", "url": "/music/summer-vibe-2024.mp3", "category": "Originals", "cover": "https://placehold.co/400x400/111/00f3ff?text=Summer+Vibe" },
+    { "title": "Techno Night (Remix)", "artist": "DJ RUBINHO BRAZIL", "url": "/music/techno-night-remix.mp3", "category": "Versions", "cover": "https://placehold.co/400x400/111/ff007f?text=Techno+Night" }
   ];
 
   let currentIndex = 0;
@@ -117,7 +99,7 @@ import music from '../data/music.json';
     let x = 0;
     for (let i = 0; i < bufferLength; i++) {
       barHeight = (dataArray[i] / 255) * height * 0.8;
-      const hue = 120 - (i / bufferLength) * 120;
+      const hue = 120 - (i / bufferLength) * 120; // Green to Red
       canvasCtx.fillStyle = `hsla(${hue}, 100%, 50%, 0.9)`;
       canvasCtx.fillRect(x, (height / 2) - (barHeight / 2), barWidth, barHeight);
       x += barWidth + 1;
@@ -155,27 +137,18 @@ import music from '../data/music.json';
 
   document.getElementById('next-btn').addEventListener('click', () => {
     currentIndex = (currentIndex + 1) % musicData.length;
-    loadTrack(currentIndex);
-    audio.play();
-    playBtn.textContent = 'Pause';
-    initAudioContext();
+    loadTrack(currentIndex); audio.play(); playBtn.textContent = 'Pause'; initAudioContext();
   });
 
   document.getElementById('prev-btn').addEventListener('click', () => {
     currentIndex = (currentIndex - 1 + musicData.length) % musicData.length;
-    loadTrack(currentIndex);
-    audio.play();
-    playBtn.textContent = 'Pause';
-    initAudioContext();
+    loadTrack(currentIndex); audio.play(); playBtn.textContent = 'Pause'; initAudioContext();
   });
 
   playlistItems.forEach(item => {
     item.addEventListener('click', () => {
       currentIndex = parseInt(item.getAttribute('data-index'));
-      loadTrack(currentIndex);
-      audio.play();
-      playBtn.textContent = 'Pause';
-      initAudioContext();
+      loadTrack(currentIndex); audio.play(); playBtn.textContent = 'Pause'; initAudioContext();
     });
   });
 </script>
@@ -195,11 +168,5 @@ import music from '../data/music.json';
   .playlist-sidebar { background: rgba(0, 0, 0, 0.4); border-left: 1px solid var(--glass-border); padding: 2rem; }
   .playlist-item { display: flex; align-items: center; gap: 1rem; padding: 0.8rem; border-radius: 10px; cursor: pointer; margin-bottom: 0.5rem; transition: 0.3s; }
   .playlist-item.active { background: rgba(0, 243, 255, 0.15); }
-  @media (max-width: 900px) {
-    .music-player-container { grid-template-columns: 1fr; }
-    .now-playing { flex-direction: column; text-align: center; }
-    .player-main { padding: 1.5rem; gap: 1.5rem; }
-    .track-info h2 { font-size: 2rem; }
-    .cover-wrapper { width: 180px; height: 180px; }
-  }
+  @media (max-width: 900px) { .music-player-container { grid-template-columns: 1fr; } .now-playing { flex-direction: column; text-align: center; } .player-main { padding: 1.5rem; gap: 1.5rem; } .track-info h2 { font-size: 2rem; } .cover-wrapper { width: 180px; height: 180px; } }
 </style>
