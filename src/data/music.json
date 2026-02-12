@@ -1,26 +1,16 @@
 [
-    {
-        "id": "1",
-        "title": "Summer Vibe 2024",
-        "artist": "DJ RUBINHO BRAZIL",
-        "url": "/music/summer-vibe-2024.mp3",
-        "category": "Originals",
-        "cover": "https://placehold.co/400x400/111/00f3ff?text=Summer+Vibe"
-    },
-    {
-        "id": "2",
-        "title": "Techno Night (Remix)",
-        "artist": "DJ RUBINHO BRAZIL",
-        "url": "/music/techno-night-remix.mp3",
-        "category": "Versions",
-        "cover": "https://placehold.co/400x400/111/ff007f?text=Techno+Night"
-    },
-    {
-        "id": "3",
-        "title": "Latino Fire Mashup",
-        "artist": "DJ RUBINHO BRAZIL",
-        "url": "/music/latino-fire.mp3",
-        "category": "Mashup",
-        "cover": "https://placehold.co/400x400/111/00f3ff?text=Latino+Fire"
-    }
+  {
+    "title": "Feel Tha Beat",
+    "artist": "DJ RUBINHO BRAZIL",
+    "url": "/music/feel-tha-beat.mp3",
+    "category": "Theme",
+    "cover": "https://placehold.co/400x400/111/00f3ff?text=Feel+Tha+Beat"
+  },
+  {
+    "title": "Summer Vibe 2024",
+    "artist": "DJ RUBINHO BRAZIL",
+    "url": "/music/summer-vibe-2024.mp3",
+    "category": "Originals",
+    "cover": "https://placehold.co/400x400/111/00f3ff?text=Summer+Vibe"
+  }
 ]
