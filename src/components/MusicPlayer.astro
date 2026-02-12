@@ -1,182 +1,197 @@
-<script>
-  const musicData = [
-    {
-      title: "Feel Tha Beat",
-      artist: "DJ RUBINHO BRAZIL",
-      url: "/music/feel-tha-beat.mp3",
-      category: "Theme",
-      cover: "https://placehold.co/400x400/111/00f3ff?text=Feel+Tha+Beat"
-    },
-    {
-      title: "Summer Vibe 2024",
-      artist: "DJ RUBINHO BRAZIL",
-      url: "/music/summer-vibe-2024.mp3",
-      category: "Originals",
-      cover: "https://placehold.co/400x400/111/00f3ff?text=Summer+Vibe"
-    },
-    {
-      title: "Techno Night (Remix)",
-      artist: "DJ RUBINHO BRAZIL",
-      url: "/music/techno-night-remix.mp3",
-      category: "Versions",
-      cover: "https://placehold.co/400x400/111/ff007f?text=Techno+Night"
+---
+import Layout from '../layouts/Layout.astro';
+import MusicPlayer from '../components/MusicPlayer.astro';
+---
+
+<Layout title="Music">
+  <section class="music-page page-fade-in">
+    <div class="page-header">
+      <h1 class="neon-text-cyan grad-cyan-pink">
+        Music <span class="neon-text-pink">Library</span>
+      </h1>
+      <p>Originals, Remixes, and Exclusive Mashups.</p>
+    </div>
+
+    <MusicPlayer />
+
+    <!-- SEZIONE SPOTIFY -->
+    <div class="spotify-section glass-card fade-in neon-border-cyan">
+      <h2 class="grad-cyan-pink">My Favours Spotify Songs</h2>
+
+      <div class="spotify-embed-container">
+        <iframe 
+          src="https://open.spotify.com/embed/user/31qtmutywoegml3vuxaapsmd6hwi?utm_source=generator&theme=0" 
+          width="100%" 
+          height="380" 
+          frameborder="0" 
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+          loading="lazy">
+        </iframe>
+      </div>
+
+      <div class="spotify-cta">
+        <a 
+          href="https://open.spotify.com/user/31qtmutywoegml3vuxaapsmd6hwi" 
+          target="_blank" 
+          class="btn btn-primary glow-hover neon-border-pink"
+        >
+          Open My Spotify Profile
+        </a>
+      </div>
+    </div>
+
+    <!-- DISCLAIMER -->
+    <div class="music-disclaimer glass-card neon-border-cyan fade-in">
+      <h3 class="grad-cyan-pink">Need these tracks?</h3>
+      <p>
+        Follow me on Spotify or SoundCloud for high-quality streaming,  
+        or visit the Store for digital downloads.
+      </p>
+      <div class="disclaimer-btns">
+        <a 
+          href="https://open.spotify.com/user/31qtmutywoegml3vuxaapsmd6hwi" 
+          target="_blank" 
+          class="btn btn-secondary glow-hover"
+        >
+          Spotify Profile
+        </a>
+        <a 
+          href="#" 
+          class="btn btn-secondary glow-hover"
+        >
+          SoundCloud
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .music-page {
+    min-height: 80vh;
+    padding: 2.5rem 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .page-header h1 {
+    font-size: 4rem;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    letter-spacing: -1px;
+  }
+
+  .page-header p {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    opacity: 0.9;
+  }
+
+  /* SPOTIFY */
+  .spotify-section {
+    max-width: 1100px;
+    margin: 5rem auto;
+    padding: 3rem;
+    text-align: center;
+    position: relative;
+  }
+
+  .spotify-section h2 {
+    font-size: 2.4rem;
+    margin-bottom: 2.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .spotify-embed-container {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow:
+      0 0 30px rgba(0, 243, 255, 0.25),
+      0 0 60px rgba(255, 0, 127, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .spotify-embed-container:hover {
+    transform: scale(1.01);
+    box-shadow:
+      0 0 40px rgba(0, 243, 255, 0.35),
+      0 0 90px rgba(255, 0, 127, 0.25);
+  }
+
+  .spotify-embed-container iframe {
+    display: block;
+    width: 100%;
+    height: 380px;
+    border: none;
+  }
+
+  .spotify-cta {
+    margin-top: 2.5rem;
+  }
+
+  /* DISCLAIMER */
+  .music-disclaimer {
+    max-width: 1100px;
+    margin: 5rem auto 2rem;
+    text-align: center;
+    padding: 4rem 3rem;
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .music-disclaimer h3 {
+    font-size: 2.1rem;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+
+  .music-disclaimer p {
+    max-width: 700px;
+    margin: 0 auto;
+    opacity: 0.85;
+  }
+
+  .disclaimer-btns {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .page-header h1 {
+      font-size: 2.5rem;
     }
-  ];
 
-  let currentIndex = 0;
-  let audioCtx = null;
-  let analyser = null;
-  let source = null;
-  let colorPhase = 0;
-
-  const audio = document.getElementById('main-audio');
-  const canvas = document.getElementById('visualizer');
-  const ctx = canvas.getContext('2d');
-  const playBtn = document.getElementById('play-btn');
-  const progressBar = document.getElementById('progress-bar');
-  const playlistItems = document.querySelectorAll('.playlist-item');
-  const coverEl = document.querySelector('.cover-wrapper');
-
-  function resizeCanvas() {
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-  }
-  window.addEventListener('resize', resizeCanvas);
-
-  function initAudio() {
-    if (audioCtx) return;
-
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 512;
-    analyser.smoothingTimeConstant = 0.88;
-
-    source = audioCtx.createMediaElementSource(audio);
-    source.connect(analyser);
-    analyser.connect(audioCtx.destination);
-
-    resizeCanvas();
-    draw();
-  }
-
-  function draw() {
-    requestAnimationFrame(draw);
-    if (!analyser) return;
-
-    const bufferLength = analyser.frequencyBinCount;
-    const data = new Uint8Array(bufferLength);
-    analyser.getByteFrequencyData(data);
-
-    const w = canvas.width;
-    const h = canvas.height;
-    ctx.clearRect(0, 0, w, h);
-
-    const bars = 64;
-    const step = Math.floor(bufferLength / bars);
-    const barW = w / bars;
-
-    colorPhase += 0.02;
-
-    let bassGlobal = 0;
-
-    for (let i = 0; i < bars; i++) {
-      const bass = data[i * step] || 0;
-      const high = data[bufferLength - 1 - i * step] || 0;
-      const power = (bass * 0.75 + high * 0.25) / 255;
-      bassGlobal = Math.max(bassGlobal, bass);
-
-      const barH = power * h;
-
-      const mix = Math.min(1, Math.max(0, power + 0.5 * Math.sin(colorPhase + i * 0.25)));
-
-      const r = Math.floor(0   * (1 - mix) + 255 * mix);
-      const g = Math.floor(243 * (1 - mix) + 0   * mix);
-      const b = Math.floor(255 * (1 - mix) + 127 * mix);
-
-      const grad = ctx.createLinearGradient(0, h - barH, 0, h);
-      grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, 1)`);
-      grad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0.3)`);
-
-      ctx.fillStyle = grad;
-      ctx.shadowBlur = 30;
-      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 0.8)`;
-
-      ctx.fillRect(
-        i * barW + barW * 0.15,
-        h - barH,
-        barW * 0.7,
-        barH
-      );
+    .music-page {
+      padding: 1.5rem 1rem;
     }
 
-    // Pulse glow cover col basso
-    const intensity = Math.min(1, bassGlobal / 180);
-    const mix = intensity;
-
-    const cr = Math.floor(0   * (1 - mix) + 255 * mix);
-    const cg = Math.floor(243 * (1 - mix) + 0   * mix);
-    const cb = Math.floor(255 * (1 - mix) + 127 * mix);
-
-    coverEl.style.boxShadow = `
-      0 0 ${30 + intensity * 40}px rgba(${cr}, ${cg}, ${cb}, 0.9),
-      0 0 ${60 + intensity * 80}px rgba(${cr}, ${cg}, ${cb}, 0.6),
-      0 0 ${110 + intensity * 120}px rgba(${cr}, ${cg}, ${cb}, 0.35)
-    `;
-    coverEl.style.transform = `scale(${1 + intensity * 0.04})`;
-  }
-
-  function loadTrack(index) {
-    const t = musicData[index];
-    document.getElementById('current-title').textContent = t.title;
-    document.getElementById('current-artist').textContent = t.artist;
-    document.getElementById('current-cover').src = t.cover;
-    document.getElementById('current-category').textContent = t.category;
-    audio.src = t.url;
-
-    playlistItems.forEach(i => i.classList.remove('active'));
-    playlistItems[index].classList.add('active');
-  }
-
-  playBtn.addEventListener('click', () => {
-    initAudio();
-    if (audio.paused) {
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      audio.play();
-      playBtn.textContent = 'Pause';
-    } else {
-      audio.pause();
-      playBtn.textContent = 'Play';
+    .spotify-section {
+      padding: 1.5rem;
+      margin: 3rem auto;
     }
-  });
 
-  audio.addEventListener('timeupdate', () => {
-    if (!audio.duration) return;
-    progressBar.style.width = (audio.currentTime / audio.duration) * 100 + '%';
-  });
+    .spotify-section h2 {
+      font-size: 1.8rem;
+    }
 
-  document.getElementById('next-btn').onclick = () => {
-    currentIndex = (currentIndex + 1) % musicData.length;
-    loadTrack(currentIndex);
-    audio.play();
-    playBtn.textContent = 'Pause';
-    initAudio();
-  };
+    .spotify-embed-container iframe {
+      height: 320px;
+    }
 
-  document.getElementById('prev-btn').onclick = () => {
-    currentIndex = (currentIndex - 1 + musicData.length) % musicData.length;
-    loadTrack(currentIndex);
-    audio.play();
-    playBtn.textContent = 'Pause';
-    initAudio();
-  };
+    .disclaimer-btns {
+      flex-direction: column;
+      gap: 1.2rem;
+    }
 
-  playlistItems.forEach(item => {
-    item.onclick = () => {
-      currentIndex = parseInt(item.dataset.index);
-      loadTrack(currentIndex);
-      audio.play();
-      playBtn.textContent = 'Pause';
-      initAudio();
-    };
-  });
-</script>
+    .music-disclaimer {
+      padding: 2.5rem 1.5rem;
+    }
+  }
+</style>
