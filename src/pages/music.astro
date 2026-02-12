@@ -11,12 +11,28 @@ import MusicPlayer from '../components/MusicPlayer.astro';
     </div>
     
     <MusicPlayer />
+
+    <div class="spotify-section glass-card fade-in">
+      <h2 class="neon-text-pink">My Favours Spotify Songs</h2>
+      <div class="spotify-embed-container">
+        <iframe 
+          style="border-radius:12px" 
+          src="https://open.spotify.com/embed/user/31qtmutywoegml3vuxaapsmd6hwi?utm_source=generator&theme=0" 
+          width="100%" 
+          height="352" 
+          frameBorder="0" 
+          allowfullscreen="" 
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+          loading="lazy">
+        </iframe>
+      </div>
+    </div>
     
     <div class="music-disclaimer glass-card neon-border-cyan">
       <h3>Need these tracks?</h3>
       <p>Follow me on Spotify or SoundCloud for high-quality streaming, or visit the Store for digital downloads.</p>
       <div class="disclaimer-btns">
-        <a href="#" class="btn btn-secondary glow-hover">Spotify</a>
+        <a href="https://open.spotify.com/user/31qtmutywoegml3vuxaapsmd6hwi" target="_blank" class="btn btn-secondary glow-hover">Spotify Profile</a>
         <a href="#" class="btn btn-secondary glow-hover">SoundCloud</a>
       </div>
     </div>
@@ -24,49 +40,16 @@ import MusicPlayer from '../components/MusicPlayer.astro';
 </Layout>
 
 <style>
-  .music-page {
-    min-height: 80vh;
-    padding: 2rem;
-  }
-
-  .page-header {
-    text-align: center;
-    margin-bottom: 4rem;
-  }
-
-  .page-header h1 {
-    font-size: 4rem;
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-    letter-spacing: -1px;
-  }
-
-  .page-header p {
-    color: var(--text-secondary);
-    font-size: 1.2rem;
-  }
-
-  .music-disclaimer {
-    max-width: 1100px;
-    margin: 4rem auto;
-    text-align: center;
-    padding: 4rem;
-    background: rgba(255, 255, 255, 0.02);
-  }
-
-  .music-disclaimer h3 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    text-transform: uppercase;
-  }
-
-  .disclaimer-btns {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    margin-top: 3rem;
-  }
-
+  .music-page { min-height: 80vh; padding: 2rem; }
+  .page-header { text-align: center; margin-bottom: 4rem; }
+  .page-header h1 { font-size: 4rem; text-transform: uppercase; margin-bottom: 1rem; letter-spacing: -1px; }
+  .page-header p { color: var(--text-secondary); font-size: 1.2rem; }
+  .spotify-section { max-width: 1100px; margin: 4rem auto; padding: 3rem; text-align: center; }
+  .spotify-section h2 { font-size: 2.5rem; margin-bottom: 2.5rem; text-transform: uppercase; }
+  .spotify-embed-container { box-shadow: 0 0 30px rgba(255, 0, 127, 0.2); border-radius: 12px; overflow: hidden; }
+  .music-disclaimer { max-width: 1100px; margin: 4rem auto; text-align: center; padding: 4rem; background: rgba(255, 255, 255, 0.02); }
+  .music-disclaimer h3 { font-size: 2rem; margin-bottom: 1rem; text-transform: uppercase; }
+  .disclaimer-btns { display: flex; justify-content: center; gap: 2rem; margin-top: 3rem; }
   @media (max-width: 768px) {
     .page-header h1 { font-size: 2.5rem; }
     .disclaimer-btns { flex-direction: column; }
