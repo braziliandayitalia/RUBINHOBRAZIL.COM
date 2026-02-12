@@ -1,64 +1,205 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import MusicPlayer from '../components/MusicPlayer.astro';
+import music from '../data/music.json';
 ---
 
-<Layout title="Music">
-  <section class="music-page page-fade-in">
-    <div class="page-header">
-      <h1 class="neon-text-cyan grad-cyan-pink">Music <span class="neon-text-pink">Library</span></h1>
-      <p>Originals, Remixes, and Exclusive Mashups.</p>
+<div class="music-player-container glass-card page-fade-in">
+  <div class="player-main">
+    <div class="now-playing">
+      <div class="cover-wrapper">
+        <img id="current-cover" src={music[0].cover} alt="Cover" />
+        <canvas id="visualizer" class="visualizer-canvas"></canvas>
+      </div>
+      <div class="track-info">
+        <h2 id="current-title">{music[0].title}</h2>
+        <p id="current-artist">{music[0].artist}</p>
+        <div class="track-meta">
+          <span id="current-category" class="category">{music[0].category}</span>
+          <span class="badge neon-border-cyan">HD AUDIO</span>
+        </div>
+      </div>
     </div>
-    
-    <MusicPlayer />
 
-    <!-- SEZIONE SPOTIFY -->
-    <div class="spotify-section glass-card fade-in">
-      <h2 class="neon-text-pink">My Favours Spotify Songs</h2>
-      <div class="spotify-embed-container">
-        <iframe 
-          style="border-radius:12px" 
-          src="https://open.spotify.com/embed/user/31qtmutywoegml3vuxaapsmd6hwi?utm_source=generator&theme=0" 
-          width="100%" 
-          height="352" 
-          frameBorder="0" 
-          allowfullscreen="" 
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-          loading="lazy">
-        </iframe>
+    <div class="player-controls">
+      <audio id="main-audio" src={music[0].url}></audio>
+      
+      <div class="progress-bar-container">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+      
+      <div class="control-btns">
+        <button id="prev-btn" class="ctrl-btn">&larr;</button>
+        <button id="play-btn" class="ctrl-btn play-btn glow-hover">Play</button>
+        <button id="next-btn" class="ctrl-btn">&rarr;</button>
       </div>
     </div>
-    
-    <div class="music-disclaimer glass-card neon-border-cyan">
-      <h3>Need these tracks?</h3>
-      <p>Follow me on Spotify or SoundCloud for high-quality streaming, or visit the Store for digital downloads.</p>
-      <div class="disclaimer-btns">
-        <a href="https://open.spotify.com/user/31qtmutywoegml3vuxaapsmd6hwi" target="_blank" class="btn btn-secondary glow-hover">Spotify Profile</a>
-        <a href="#" class="btn btn-secondary glow-hover">SoundCloud</a>
-      </div>
+  </div>
+
+  <div class="playlist-sidebar">
+    <div class="playlist-header">
+      <h3 class="grad-cyan-pink">Next Tracks</h3>
     </div>
-  </section>
-</Layout>
+    <ul class="playlist">
+      {music.map((track, index) => (
+        <li class={`playlist-item ${index === 0 ? 'active' : ''}`} data-index={index}>
+          <div class="item-visual">
+            <img src={track.cover} alt="" />
+          </div>
+          <div class="item-info">
+            <span class="item-title">{track.title}</span>
+            <span class="item-artist">{track.artist}</span>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
+
+<script>
+  const musicData = [
+    {
+      "title": "Feel Tha Beat",
+      "artist": "DJ RUBINHO BRAZIL",
+      "url": "/music/feel-tha-beat.mp3",
+      "category": "Theme",
+      "cover": "https://placehold.co/400x400/111/00f3ff?text=Feel+Tha+Beat"
+    },
+    {
+      "title": "Summer Vibe 2024",
+      "artist": "DJ RUBINHO BRAZIL",
+      "url": "/music/summer-vibe-2024.mp3",
+      "category": "Originals",
+      "cover": "https://placehold.co/400x400/111/00f3ff?text=Summer+Vibe"
+    },
+    {
+      "title": "Techno Night (Remix)",
+      "artist": "DJ RUBINHO BRAZIL",
+      "url": "/music/techno-night-remix.mp3",
+      "category": "Versions",
+      "cover": "https://placehold.co/400x400/111/ff007f?text=Techno+Night"
+    }
+  ];
+
+  let currentIndex = 0;
+  let audioCtx;
+  let analyser;
+  let source;
+  
+  const audio = document.getElementById('main-audio');
+  const canvas = document.getElementById('visualizer');
+  const canvasCtx = canvas.getContext('2d');
+  const playBtn = document.getElementById('play-btn');
+  const progressBar = document.getElementById('progress-bar');
+  const playlistItems = document.querySelectorAll('.playlist-item');
+
+  function initAudioContext() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioCtx.createAnalyser();
+      source = audioCtx.createMediaElementSource(audio);
+      source.connect(analyser);
+      analyser.connect(audioCtx.destination);
+      analyser.fftSize = 256;
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      draw();
+    }
+  }
+
+  function draw() {
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    analyser.getByteFrequencyData(dataArray);
+    const width = canvas.width;
+    const height = canvas.height;
+    canvasCtx.clearRect(0, 0, width, height);
+    const barWidth = (width / bufferLength) * 2;
+    let barHeight;
+    let x = 0;
+    for (let i = 0; i < bufferLength; i++) {
+      barHeight = (dataArray[i] / 255) * height * 0.8;
+      const hue = 120 - (i / bufferLength) * 120;
+      canvasCtx.fillStyle = `hsla(${hue}, 100%, 50%, 0.9)`;
+      canvasCtx.fillRect(x, (height / 2) - (barHeight / 2), barWidth, barHeight);
+      x += barWidth + 1;
+    }
+    requestAnimationFrame(draw);
+  }
+
+  function loadTrack(index) {
+    const track = musicData[index];
+    document.getElementById('current-title').textContent = track.title;
+    document.getElementById('current-artist').textContent = track.artist;
+    document.getElementById('current-cover').src = track.cover;
+    document.getElementById('current-category').textContent = track.category;
+    audio.src = track.url;
+    playlistItems.forEach(item => item.classList.remove('active'));
+    playlistItems[index].classList.add('active');
+  }
+
+  playBtn.addEventListener('click', () => {
+    initAudioContext();
+    if (audio.paused) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      audio.play();
+      playBtn.textContent = 'Pause';
+    } else {
+      audio.pause();
+      playBtn.textContent = 'Play';
+    }
+  });
+
+  audio.addEventListener('timeupdate', () => {
+    const percent = (audio.currentTime / audio.duration) * 100;
+    progressBar.style.width = percent + '%';
+  });
+
+  document.getElementById('next-btn').addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % musicData.length;
+    loadTrack(currentIndex);
+    audio.play();
+    playBtn.textContent = 'Pause';
+    initAudioContext();
+  });
+
+  document.getElementById('prev-btn').addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + musicData.length) % musicData.length;
+    loadTrack(currentIndex);
+    audio.play();
+    playBtn.textContent = 'Pause';
+    initAudioContext();
+  });
+
+  playlistItems.forEach(item => {
+    item.addEventListener('click', () => {
+      currentIndex = parseInt(item.getAttribute('data-index'));
+      loadTrack(currentIndex);
+      audio.play();
+      playBtn.textContent = 'Pause';
+      initAudioContext();
+    });
+  });
+</script>
 
 <style>
-  .music-page { min-height: 80vh; padding: 2rem; }
-  .page-header { text-align: center; margin-bottom: 4rem; }
-  .page-header h1 { font-size: 4rem; text-transform: uppercase; margin-bottom: 1rem; letter-spacing: -1px; }
-  .page-header p { color: var(--text-secondary); font-size: 1.2rem; }
-  
-  .spotify-section { max-width: 1100px; margin: 4rem auto; padding: 3rem; text-align: center; }
-  .spotify-section h2 { font-size: 2.5rem; margin-bottom: 2.5rem; text-transform: uppercase; }
-  .spotify-embed-container { box-shadow: 0 0 30px rgba(255, 0, 127, 0.2); border-radius: 12px; overflow: hidden; }
-
-  .music-disclaimer { max-width: 1100px; margin: 4rem auto; text-align: center; padding: 4rem; background: rgba(255, 255, 255, 0.02); }
-  .music-disclaimer h3 { font-size: 2rem; margin-bottom: 1rem; text-transform: uppercase; }
-  .disclaimer-btns { display: flex; justify-content: center; gap: 2rem; margin-top: 3rem; }
-
-  @media (max-width: 768px) {
-    .page-header h1 { font-size: 2.5rem; }
-    .disclaimer-btns { flex-direction: column; }
-    .music-page { padding: 1rem; }
-    .spotify-section { padding: 1.5rem; }
-    .spotify-section h2 { font-size: 1.8rem; }
+  .music-player-container { display: grid; grid-template-columns: 1fr 300px; background: rgba(10, 10, 10, 0.6); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; max-width: 1100px; margin: 2rem auto; }
+  .player-main { padding: 3rem; display: flex; flex-direction: column; gap: 3rem; }
+  .now-playing { display: flex; gap: 3rem; align-items: center; }
+  .cover-wrapper { position: relative; width: 250px; height: 250px; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); }
+  .cover-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+  .visualizer-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; opacity: 0.8; }
+  .track-info h2 { font-size: 3rem; margin-bottom: 0.5rem; letter-spacing: -1px; }
+  .progress-bar-container { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; cursor: pointer; }
+  .progress-bar { height: 100%; background: var(--accent-cyan); box-shadow: 0 0 15px var(--accent-cyan); width: 0%; }
+  .control-btns { display: flex; justify-content: center; gap: 2.5rem; align-items: center; }
+  .play-btn { width: 70px; height: 70px; background: white; color: black; border-radius: 50%; font-weight: 800; }
+  .playlist-sidebar { background: rgba(0, 0, 0, 0.4); border-left: 1px solid var(--glass-border); padding: 2rem; }
+  .playlist-item { display: flex; align-items: center; gap: 1rem; padding: 0.8rem; border-radius: 10px; cursor: pointer; margin-bottom: 0.5rem; transition: 0.3s; }
+  .playlist-item.active { background: rgba(0, 243, 255, 0.15); }
+  @media (max-width: 900px) {
+    .music-player-container { grid-template-columns: 1fr; }
+    .now-playing { flex-direction: column; text-align: center; }
+    .player-main { padding: 1.5rem; gap: 1.5rem; }
+    .track-info h2 { font-size: 2rem; }
+    .cover-wrapper { width: 180px; height: 180px; }
   }
 </style>
